@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parents[3]
 
 load_dotenv(BASE_DIR / ".env")
 
-SECRET_KEY = os.environ["SECRET_KEY"]
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
 
 # Application definition
