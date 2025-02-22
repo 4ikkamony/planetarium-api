@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.postgres",
     "rest_framework",
     "drf_spectacular",
     "planetarium",
@@ -110,6 +111,7 @@ STATIC_URL = "static/"
 MEDIA_URL = "/media/"
 
 MEDIA_ROOT = os.environ["DJANGO_MEDIA_ROOT"]
+
 
 # Default primary key field type
 
