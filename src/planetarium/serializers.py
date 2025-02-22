@@ -37,7 +37,7 @@ class ShowPosterSerializer(serializers.ModelSerializer):
 
 
 class ShowSerializer(serializers.ModelSerializer):
-    poster = serializers.ImageField(read_only=False)
+    poster = serializers.ImageField(read_only=False, required=False)
 
     class Meta:
         model = Show
@@ -64,6 +64,13 @@ class ShowListSerializer(serializers.ModelSerializer):
             "show_themes",
             "poster",
         )
+
+
+class ShowSearchSerializer(ShowListSerializer):
+    relevance = serializers.FloatField()
+
+    class Meta(ShowListSerializer.Meta):
+        fields = ShowListSerializer.Meta.fields + ("relevance",)
 
 
 class EventSerializer(serializers.ModelSerializer):
