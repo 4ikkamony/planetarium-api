@@ -1,6 +1,8 @@
 from django.db.models import F, Count
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status, generics
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from planetarium.models import ShowTheme, Dome, Show, Event, Booking
@@ -14,7 +16,7 @@ from planetarium.serializers import (
     ShowDetailSerializer,
     EventDetailSerializer,
     ShowListSerializer,
-    BookingSerializer,
+    BookingCreateSerializer,
     BookingListSerializer,
 )
 
@@ -43,7 +45,14 @@ class ShowViewSet(
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = Show.objects.prefetch_related("show_themes")
+    queryset = Show.objects.prefetch_related(
+        "events",
+        "events__dome",
+        "show_themes",
+    ).annotate(
+        events_count=Count("events"),
+    )
+
     serializer_class = ShowSerializer
     filter_backends = [DjangoFilterBackend, ShowSearchFilter]
     filterset_fields = [
@@ -81,26 +90,27 @@ class EventViewSet(viewsets.ModelViewSet):
 
         return EventSerializer
 
+    @action(detail=True, methods=["POST"], url_path="book-tickets")
+    def book_tickets(self, request, pk=None):
+        event = self.get_object()
+        serializer = BookingCreateSerializer(
+            data=request.data, context={"request": request, "event": event}
+        )
+        serializer.is_valid(raise_exception=True)
+        booking = serializer.save()
 
-class BookingViewSet(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    GenericViewSet,
-):
+        return Response(
+            {"message": "Booking successful", "booking_id": booking.id},
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class BookingListView(generics.ListAPIView):
+    serializer_class = BookingListSerializer
     queryset = Booking.objects.prefetch_related(
         "tickets__ticket_type",
         "tickets__event",
     )
-    serializer_class = BookingSerializer
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
-
-    def get_serializer_class(self):
-        if self.action == "list":
-            return BookingListSerializer
-
-        return BookingSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)

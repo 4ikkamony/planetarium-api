@@ -30,42 +30,6 @@ class DomeSerializer(serializers.ModelSerializer):
         )
 
 
-class ShowPosterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Show
-        fields = ("id", "poster")
-
-
-class ShowSerializer(serializers.ModelSerializer):
-    poster = serializers.ImageField(read_only=False, required=False, allow_null=True)
-
-    class Meta:
-        model = Show
-        fields = (
-            "id",
-            "title",
-            "description",
-            "show_themes",
-            "poster",
-        )
-
-
-class ShowListSerializer(serializers.ModelSerializer):
-    show_themes = serializers.SlugRelatedField(
-        many=True, read_only=True, slug_field="name"
-    )
-
-    class Meta:
-        model = Show
-        fields = (
-            "id",
-            "title",
-            "description",
-            "show_themes",
-            "poster",
-        )
-
-
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
@@ -86,9 +50,65 @@ class EventListSerializer(EventSerializer):
         )
 
 
+class ShowPosterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Show
+        fields = ("id", "poster")
+
+
+class ShowSerializer(serializers.ModelSerializer):
+    poster = serializers.ImageField(read_only=False, required=False, allow_null=True)
+    events = EventSerializer(write_only=True, many=True)
+
+    class Meta:
+        model = Show
+        fields = (
+            "id",
+            "title",
+            "description",
+            "show_themes",
+            "events",
+            "poster",
+        )
+
+
+class EventDateSerializer(serializers.ModelSerializer):
+    event_date = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Event
+        fields = ("event_date",)
+
+    def get_event_date(self, obj):
+        return obj.event_time.date()
+
+
+class ShowListSerializer(serializers.ModelSerializer):
+    show_themes = serializers.SlugRelatedField(
+        many=True, read_only=True, slug_field="name"
+    )
+    events_count = serializers.IntegerField(read_only=True)
+    events_dates = EventDateSerializer(source="events", many=True, read_only=True)
+
+    class Meta:
+        model = Show
+        fields = (
+            "id",
+            "title",
+            "description",
+            "show_themes",
+            "events_count",
+            "events_dates",
+            "poster",
+        )
+
+
 class ShowDetailSerializer(serializers.ModelSerializer):
     show_themes = ShowThemeSerializer(many=True, read_only=True)
-    events = EventListSerializer()
+    events = EventListSerializer(
+        many=True,
+        read_only=True,
+    )
 
     class Meta:
         model = Show
@@ -113,6 +133,8 @@ class TicketTypeSerializer(serializers.ModelSerializer):
 
 
 class TicketSerializer(serializers.ModelSerializer):
+    event = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = Ticket
         fields = ("id", "row", "seat", "event", "ticket_type")
@@ -130,7 +152,6 @@ class TicketSeatsSerializer(TicketSerializer):
 
 
 class EventDetailSerializer(EventSerializer):
-    show = ShowListSerializer(many=False, read_only=True)
     dome = DomeSerializer(many=False, read_only=True)
     taken_seats = TicketSeatsSerializer(source="tickets", many=True, read_only=True)
 
@@ -140,20 +161,53 @@ class EventDetailSerializer(EventSerializer):
 
 
 class BookingSerializer(serializers.ModelSerializer):
-    tickets = TicketSerializer(many=True, read_only=False, allow_empty=False)
-
     class Meta:
         model = Booking
         fields = ("id", "tickets", "created_at")
 
-    def create(self, validated_data):
-        with transaction.atomic():
-            tickets_data = validated_data.pop("tickets")
-            order = Booking.objects.create(**validated_data)
-            for ticket_data in tickets_data:
-                Ticket.objects.create(order=order, **ticket_data)
-            return order
-
 
 class BookingListSerializer(BookingSerializer):
     tickets = TicketListSerializer(many=True, read_only=True)
+
+
+class BookingCreateSerializer(BookingSerializer):
+    tickets = TicketSerializer(many=True, write_only=True)
+
+    def validate_tickets(self, tickets):
+        """Check if the requested seats are available."""
+        if not tickets:
+            raise serializers.ValidationError("At least one ticket must be booked.")
+
+        event = self.context["event"]
+        taken_seats = {(t.row, t.seat) for t in event.tickets.all()}
+
+        for ticket in tickets:
+            seat_tuple = (ticket["row"], ticket["seat"])
+            if seat_tuple in taken_seats:
+                raise serializers.ValidationError(
+                    f"Seat {seat_tuple} is already taken."
+                )
+
+        return tickets
+
+    def create(self, validated_data):
+        """Create a booking with multiple tickets."""
+        with transaction.atomic():
+            tickets_data = validated_data.pop("tickets")
+            user = self.context["request"].user
+            event = self.context["event"]
+
+            booking = Booking.objects.create(user=user)
+            tickets = [
+                Ticket(
+                    event=event,
+                    booking=booking,
+                    row=ticket["row"],
+                    seat=ticket["seat"],
+                    ticket_type=ticket["ticket_type"],
+                )
+                for ticket in tickets_data
+            ]
+            Ticket.objects.bulk_create(tickets)
+
+        return booking
