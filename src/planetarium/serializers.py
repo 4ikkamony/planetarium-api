@@ -37,7 +37,7 @@ class ShowPosterSerializer(serializers.ModelSerializer):
 
 
 class ShowSerializer(serializers.ModelSerializer):
-    poster = serializers.ImageField(read_only=False, required=False)
+    poster = serializers.ImageField(read_only=False, required=False, allow_null=True)
 
     class Meta:
         model = Show
