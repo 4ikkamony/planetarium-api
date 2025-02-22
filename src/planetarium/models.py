@@ -25,7 +25,7 @@ def show_poster_file_path(instance, filename):
     _, extension = os.path.splitext(filename)
     filename = f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
     file_uploads_path = os.path.join("uploads/shows/", filename)
-    return os.path.join(settings.MEDIA_ROOT, file_uploads_path)
+    return file_uploads_path
 
 
 class Show(models.Model):
