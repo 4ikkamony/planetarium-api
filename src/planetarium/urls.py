@@ -2,7 +2,6 @@ from django.urls import path, include
 from rest_framework import routers
 
 from planetarium.views import (
-    shows_search,
     ShowThemeViewSet,
     DomeViewSet,
     ShowViewSet,
@@ -18,7 +17,6 @@ router.register("events", EventViewSet)
 router.register("bookings", BookingViewSet)
 
 urlpatterns = [
-    path("shows/search/", shows_search, name="shows-search"),
     path("", include(router.urls)),
 ]
 

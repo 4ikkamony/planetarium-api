@@ -66,13 +66,6 @@ class ShowListSerializer(serializers.ModelSerializer):
         )
 
 
-class ShowSearchSerializer(ShowListSerializer):
-    relevance = serializers.FloatField()
-
-    class Meta(ShowListSerializer.Meta):
-        fields = ShowListSerializer.Meta.fields + ("relevance",)
-
-
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event

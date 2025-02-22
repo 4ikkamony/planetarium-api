@@ -1,17 +1,10 @@
-from django.contrib.postgres.search import (
-    SearchQuery,
-    SearchVector,
-    SearchRank,
-    TrigramSimilarity,
-)
 from django.db.models import F, Count
-from rest_framework import viewsets, mixins, status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets, mixins
 from rest_framework.viewsets import GenericViewSet
 
 from planetarium.models import ShowTheme, Dome, Show, Event, Booking
-
+from planetarium.filters import ShowSearchFilter
 from planetarium.serializers import (
     ShowThemeSerializer,
     DomeSerializer,
@@ -23,7 +16,6 @@ from planetarium.serializers import (
     ShowListSerializer,
     BookingSerializer,
     BookingListSerializer,
-    ShowSearchSerializer,
 )
 
 
@@ -53,6 +45,10 @@ class ShowViewSet(
 ):
     queryset = Show.objects.prefetch_related("show_themes")
     serializer_class = ShowSerializer
+    filter_backends = [DjangoFilterBackend, ShowSearchFilter]
+    filterset_fields = [
+        "show_themes",
+    ]
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -62,43 +58,6 @@ class ShowViewSet(
             return ShowDetailSerializer
 
         return ShowSerializer
-
-
-@api_view(["GET"])
-def shows_search(request):
-    query = request.query_params.get("q", "")
-    if not query:
-        return Response(
-            {"error": "Query parameter 'q' is required"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    search_query = SearchQuery(query)
-    search_vector = SearchVector("title", "description")
-
-    results = (
-        Show.objects.annotate(
-            search_vector=search_vector,
-            relevance=SearchRank(search_vector, search_query),
-        )
-        .filter(search_vector=search_query)
-        .order_by("-relevance")
-    )
-
-    if not results.exists():
-        results = (
-            Show.objects.annotate(
-                relevance=(
-                    TrigramSimilarity("title", query)
-                    + TrigramSimilarity("description", query)
-                )
-            )
-            .filter(relevance__gt=0.05)
-            .order_by("-relevance")
-        )
-
-    serializer = ShowSearchSerializer(results, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class EventViewSet(viewsets.ModelViewSet):
