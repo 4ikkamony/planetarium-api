@@ -1,3 +1,7 @@
+import os
+import uuid
+
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.db import models
@@ -17,20 +21,26 @@ class ShowTheme(models.Model):
     name = models.CharField(max_length=255)
 
 
+def show_poster_file_path(instance, filename):
+    _, extension = os.path.splitext(filename)
+    filename = f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
+    file_uploads_path = os.path.join("uploads/shows/", filename)
+    return os.path.join(settings.MEDIA_ROOT, file_uploads_path)
+
+
 class Show(models.Model):
     """General information about a planetarium show"""
 
     title = models.CharField(max_length=255)
     description = models.TextField()
-    show_themes = models.ManyToManyField(ShowTheme, related_name="astronomy_shows")
+    show_themes = models.ManyToManyField(ShowTheme, related_name="shows")
+    poster = models.ImageField(null=True, upload_to=show_poster_file_path)
 
 
 class Event(models.Model):
     """A specific planetarium event session in a specific Show"""
 
-    astronomy_show = models.ForeignKey(
-        Show, on_delete=models.CASCADE, related_name="events"
-    )
+    show = models.ForeignKey(Show, on_delete=models.CASCADE, related_name="events")
     dome = models.ForeignKey(Dome, on_delete=models.CASCADE, related_name="events")
     event_time = models.DateTimeField()
 
