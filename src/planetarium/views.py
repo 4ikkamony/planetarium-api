@@ -129,12 +129,13 @@ class BookingViewSet(
     GenericViewSet,
 ):
     queryset = Booking.objects.prefetch_related(
-        "tickets__event__show", "tickets__event__dome"
+        "tickets__ticket_type",
+        "tickets__event",
     )
     serializer_class = BookingSerializer
 
     def get_queryset(self):
-        return Booking.objects.filter(user=self.request.user)
+        return super().get_queryset().filter(user=self.request.user)
 
     def get_serializer_class(self):
         if self.action == "list":
