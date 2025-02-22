@@ -14,11 +14,17 @@ class Dome(models.Model):
     rows = models.IntegerField()
     seats_in_row = models.IntegerField()
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class ShowTheme(models.Model):
     """Theme of the show"""
 
     name = models.CharField(max_length=255)
+
+    def __str__(self) -> str:
+        return self.name
 
 
 def show_poster_file_path(instance, filename):
@@ -36,6 +42,9 @@ class Show(models.Model):
     show_themes = models.ManyToManyField(ShowTheme, related_name="shows")
     poster = models.ImageField(null=True, upload_to=show_poster_file_path)
 
+    def __str__(self) -> str:
+        return self.title
+
 
 class Event(models.Model):
     """A specific planetarium event session in a specific Show"""
@@ -43,6 +52,13 @@ class Event(models.Model):
     show = models.ForeignKey(Show, on_delete=models.CASCADE, related_name="events")
     dome = models.ForeignKey(Dome, on_delete=models.CASCADE, related_name="events")
     event_time = models.DateTimeField()
+
+    def __str__(self) -> str:
+        return (
+            f"Event of show={self.show} "
+            f"in dome={self.dome} "
+            f"at {self.event_time}"
+        )
 
 
 class Booking(models.Model):
@@ -52,6 +68,9 @@ class Booking(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="bookings"
     )
+
+    def __str__(self) -> str:
+        return f"Booking made on {self.created_at} by user={self.user}"
 
 
 class TicketType(models.Model):
@@ -70,6 +89,9 @@ class TicketType(models.Model):
         max_length=20, choices=TicketCategory.choices, unique=True
     )
 
+    def __str__(self):
+        return f"{self.category} {self.price}"
+
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
 
 
@@ -85,3 +107,9 @@ class Ticket(models.Model):
     ticket_type = models.ForeignKey(
         TicketType, on_delete=models.CASCADE, related_name="tickets"
     )
+
+    def __str__(self) -> str:
+        return (
+            f"Ticket {self.ticket_type} "
+            f"row={self.row}, seat={self.seat} "
+        )
