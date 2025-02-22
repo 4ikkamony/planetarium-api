@@ -1,5 +1,13 @@
+from django.contrib.postgres.search import (
+    SearchQuery,
+    SearchVector,
+    SearchRank,
+    TrigramSimilarity,
+)
 from django.db.models import F, Count
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from planetarium.models import ShowTheme, Dome, Show, Event, Booking
@@ -15,6 +23,7 @@ from planetarium.serializers import (
     ShowListSerializer,
     BookingSerializer,
     BookingListSerializer,
+    ShowSearchSerializer,
 )
 
 
@@ -53,6 +62,47 @@ class ShowViewSet(
             return ShowDetailSerializer
 
         return ShowSerializer
+
+
+@api_view(["GET"])
+def shows_search(request):
+    query = request.query_params.get("q", "")
+    if not query:
+        return Response(
+            {"error": "Query parameter 'q' is required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    search_query = SearchQuery(query)
+    search_vector = SearchVector("title", "description")
+
+    results = (
+        Show.objects.annotate(
+            search_vector=search_vector,
+            relevance=SearchRank(search_vector, search_query),
+        )
+        .filter(search_vector=search_query)
+        .order_by("-relevance")
+    )
+
+    if not results.exists():
+        results = (
+            Show.objects.annotate(
+                relevance=(
+                    TrigramSimilarity("title", query)
+                    + TrigramSimilarity("description", query)
+                )
+            )
+            .filter(relevance__gt=0.05)
+            .order_by("-relevance")
+        )
+
+    serializer = ShowSearchSerializer(results, many=True)
+
+    if serializer.errors:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class EventViewSet(viewsets.ModelViewSet):
