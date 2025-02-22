@@ -55,8 +55,9 @@ class Event(models.Model):
 
     def __str__(self) -> str:
         return (
-            f"Event of show={self.show} "
-            f"in dome={self.dome} "
+            f"Event {self.id} "
+            f"of {self.show} "
+            f"in {self.dome} "
             f"at {self.event_time}"
         )
 
@@ -70,7 +71,7 @@ class Booking(models.Model):
     )
 
     def __str__(self) -> str:
-        return f"Booking made on {self.created_at} by user={self.user}"
+        return f"Booking {self.created_at} by {self.user}"
 
 
 class TicketType(models.Model):
@@ -109,7 +110,4 @@ class Ticket(models.Model):
     )
 
     def __str__(self) -> str:
-        return (
-            f"Ticket {self.ticket_type} "
-            f"row={self.row}, seat={self.seat} "
-        )
+        return f"Ticket {self.ticket_type} " f"row={self.row}, seat={self.seat} "
