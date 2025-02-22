@@ -22,16 +22,18 @@ class ShowThemeSerializer(serializers.ModelSerializer):
 class DomeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dome
-        fields = ("id", "name", "rows", "seats_in_row", )
+        fields = (
+            "id",
+            "name",
+            "rows",
+            "seats_in_row",
+        )
 
 
 class ShowPosterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Show
-        fields = (
-            "id",
-            "poster"
-        )
+        fields = ("id", "poster")
 
 
 class ShowSerializer(serializers.ModelSerializer):
@@ -72,9 +74,7 @@ class EventSerializer(serializers.ModelSerializer):
 
 class EventListSerializer(EventSerializer):
     show_title = serializers.CharField(source="show.title", read_only=True)
-    dome_name = serializers.CharField(
-        source="dome.name", read_only=True
-    )
+    dome_name = serializers.CharField(source="dome.name", read_only=True)
 
     class Meta:
         model = Event
@@ -84,7 +84,6 @@ class EventListSerializer(EventSerializer):
             "show_title",
             "dome_name",
         )
-
 
 
 class ShowDetailSerializer(serializers.ModelSerializer):
@@ -106,7 +105,11 @@ class ShowDetailSerializer(serializers.ModelSerializer):
 class TicketTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = TicketType
-        fields = ("id", "category", "price", )
+        fields = (
+            "id",
+            "category",
+            "price",
+        )
 
 
 class TicketSerializer(serializers.ModelSerializer):
@@ -129,9 +132,7 @@ class TicketSeatsSerializer(TicketSerializer):
 class EventDetailSerializer(EventSerializer):
     show = ShowListSerializer(many=False, read_only=True)
     dome = DomeSerializer(many=False, read_only=True)
-    taken_seats = TicketSeatsSerializer(
-        source="tickets", many=True, read_only=True
-    )
+    taken_seats = TicketSeatsSerializer(source="tickets", many=True, read_only=True)
 
     class Meta:
         model = Event
