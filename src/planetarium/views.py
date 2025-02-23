@@ -14,6 +14,11 @@ from planetarium.schemas.events import (
     event_list_schema,
     event_detail_schema,
 )
+from planetarium.schemas.shows import (
+    show_list_schema,
+    show_create_schema,
+    show_detail_schema,
+)
 from planetarium.serializers import (
     ShowThemeSerializer,
     DomeSerializer,
@@ -25,6 +30,7 @@ from planetarium.serializers import (
     ShowListSerializer,
     BookingCreateSerializer,
     BookingListSerializer,
+    ShowAddEventSerializer,
 )
 
 
@@ -46,6 +52,11 @@ class DomeViewSet(
     serializer_class = DomeSerializer
 
 
+@extend_schema_view(
+    list=extend_schema(**show_list_schema),
+    retrieve=extend_schema(**show_detail_schema),
+    create=extend_schema(**show_create_schema)
+)
 class ShowViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
@@ -59,7 +70,6 @@ class ShowViewSet(
     ).annotate(
         events_count=Count("events"),
     )
-
     serializer_class = ShowSerializer
     filter_backends = [DjangoFilterBackend, ShowSearchFilter]
     filterset_fields = [
@@ -73,7 +83,27 @@ class ShowViewSet(
         if self.action == "retrieve":
             return ShowDetailSerializer
 
+        if self.action == "add_event":
+            return ShowAddEventSerializer
+
         return ShowSerializer
+
+    @action(detail=True, methods=["POST"], url_path="add-event")
+    def add_event(self, request, pk=None):
+        """
+        Add events to a specific show.
+        """
+        show = self.get_object()
+        serializer = ShowAddEventSerializer(data=request.data, context={"show": show})
+
+        if serializer.is_valid():
+            created_events = serializer.save()
+            return Response(
+                EventSerializer(created_events, many=True).data,
+                status=status.HTTP_201_CREATED,
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @extend_schema_view(
