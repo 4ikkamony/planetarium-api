@@ -1,4 +1,4 @@
-from django.db.models import F, Count
+from django.db.models import F, Count, Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, status, generics
 from rest_framework.decorators import action
@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from planetarium.models import ShowTheme, Dome, Show, Event, Booking
-from planetarium.filters import ShowSearchFilter
+from planetarium.filters import ShowSearchFilter, BookingFilter
 from planetarium.serializers import (
     ShowThemeSerializer,
     DomeSerializer,
@@ -107,10 +107,15 @@ class EventViewSet(viewsets.ModelViewSet):
 
 class BookingListView(generics.ListAPIView):
     serializer_class = BookingListSerializer
+
     queryset = Booking.objects.prefetch_related(
         "tickets__ticket_type",
-        "tickets__event",
+        Prefetch(
+            "tickets__event", queryset=Event.objects.select_related("show", "dome")
+        ),
     )
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = BookingFilter
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
