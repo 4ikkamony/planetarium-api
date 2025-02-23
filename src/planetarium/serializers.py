@@ -147,13 +147,19 @@ class TicketSerializer(serializers.ModelSerializer):
         seat = data.get("seat")
 
         if not event or not event.dome:
-            raise serializers.ValidationError("Invalid event or event has no associated dome.")
+            raise serializers.ValidationError(
+                "Invalid event or event has no associated dome."
+            )
 
         if not (1 <= row <= event.dome.rows):
-            raise serializers.ValidationError(f"Row must be between 1 and {event.dome.rows}.")
+            raise serializers.ValidationError(
+                f"Row must be between 1 and {event.dome.rows}."
+            )
 
         if not (1 <= seat <= event.dome.seats_in_row):
-            raise serializers.ValidationError(f"Seat must be between 1 and {event.dome.seats_in_row}.")
+            raise serializers.ValidationError(
+                f"Seat must be between 1 and {event.dome.seats_in_row}."
+            )
 
         return data
 
