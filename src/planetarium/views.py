@@ -8,6 +8,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from planetarium.models import ShowTheme, Dome, Show, Event, Booking
 from planetarium.filters import ShowSearchFilter, BookingFilter
+from planetarium.schemas.bookings import booking_list_schema
 from planetarium.schemas.events import (
     book_tickets_schema,
     event_list_schema,
@@ -116,13 +117,17 @@ class EventViewSet(viewsets.ModelViewSet):
         )
 
 
+@extend_schema_view(
+    get=extend_schema(**booking_list_schema)
+)
 class BookingListView(generics.ListAPIView):
     serializer_class = BookingListSerializer
 
     queryset = Booking.objects.prefetch_related(
         "tickets__ticket_type",
         Prefetch(
-            "tickets__event", queryset=Event.objects.select_related("show", "dome")
+            "tickets__event",
+            queryset=Event.objects.select_related("show", "dome")
         ),
     )
     filter_backends = [DjangoFilterBackend]
