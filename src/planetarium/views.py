@@ -3,6 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import viewsets, mixins, status, generics
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -55,7 +56,7 @@ class DomeViewSet(
 @extend_schema_view(
     list=extend_schema(**show_list_schema),
     retrieve=extend_schema(**show_detail_schema),
-    create=extend_schema(**show_create_schema)
+    create=extend_schema(**show_create_schema),
 )
 class ShowViewSet(
     mixins.ListModelMixin,
@@ -132,6 +133,11 @@ class EventViewSet(viewsets.ModelViewSet):
 
         return EventSerializer
 
+    def get_permissions(self):
+        if self.action == "book_tickets":
+            return (IsAuthenticated,)
+        return super().get_permissions()
+
     @action(detail=True, methods=["POST"], url_path="book-tickets")
     def book_tickets(self, request, pk=None):
         event = self.get_object()
@@ -159,6 +165,7 @@ class BookingListView(generics.ListAPIView):
     )
     filter_backends = [DjangoFilterBackend]
     filterset_class = BookingFilter
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
