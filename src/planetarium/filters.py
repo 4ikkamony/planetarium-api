@@ -1,3 +1,4 @@
+from django_filters import rest_framework as filters
 from rest_framework.filters import BaseFilterBackend
 from django.contrib.postgres.search import (
     SearchQuery,
@@ -5,6 +6,8 @@ from django.contrib.postgres.search import (
     SearchRank,
     TrigramSimilarity,
 )
+
+from planetarium.models import Booking
 
 
 class ShowSearchFilter(BaseFilterBackend):
@@ -38,3 +41,22 @@ class ShowSearchFilter(BaseFilterBackend):
             )
 
         return results
+
+
+class BookingFilter(filters.FilterSet):
+    event_time = filters.DateFromToRangeFilter(field_name="tickets__event__event_time")
+    event_id = filters.NumberFilter(field_name="tickets__event__id")
+    show_id = filters.NumberFilter(field_name="tickets__event__show__id")
+    dome_id = filters.NumberFilter(field_name="tickets__event__dome__id")
+
+    class Meta:
+        model = Booking
+        fields = [
+            "event_time",
+            "event_id",
+            "show_id",
+            "dome_id",
+        ]
+
+    def filter_queryset(self, queryset):
+        return super().filter_queryset(queryset).distinct()
