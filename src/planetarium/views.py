@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from planetarium.permissions import IsAdminOrReadOnly
 from planetarium.models import ShowTheme, Dome, Show, Event, Booking
 from planetarium.filters import ShowSearchFilter, BookingFilter
 from planetarium.schemas.bookings import booking_list_schema
@@ -42,6 +43,7 @@ class ShowThemeViewSet(
 ):
     queryset = ShowTheme.objects.all()
     serializer_class = ShowThemeSerializer
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class DomeViewSet(
@@ -51,6 +53,7 @@ class DomeViewSet(
 ):
     queryset = Dome.objects.all()
     serializer_class = DomeSerializer
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 @extend_schema_view(
@@ -76,6 +79,7 @@ class ShowViewSet(
     filterset_fields = [
         "show_themes",
     ]
+    permission_classes = (IsAdminOrReadOnly,)
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -123,6 +127,7 @@ class EventViewSet(viewsets.ModelViewSet):
         )
     )
     serializer_class = EventSerializer
+    permission_classes = (IsAdminOrReadOnly,)
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -135,7 +140,7 @@ class EventViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == "book_tickets":
-            return (IsAuthenticated,)
+            return (IsAuthenticated(),)
         return super().get_permissions()
 
     @action(detail=True, methods=["POST"], url_path="book-tickets")
@@ -156,7 +161,6 @@ class EventViewSet(viewsets.ModelViewSet):
 @extend_schema_view(get=extend_schema(**booking_list_schema))
 class BookingListView(generics.ListAPIView):
     serializer_class = BookingListSerializer
-
     queryset = Booking.objects.prefetch_related(
         "tickets__ticket_type",
         Prefetch(
