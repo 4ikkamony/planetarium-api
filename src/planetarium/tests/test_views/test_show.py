@@ -10,12 +10,12 @@ from planetarium.serializers import ShowDetailSerializer
 
 @pytest.fixture
 def show_theme():
-    return ShowTheme.objects.create(name="Drama")
+    return ShowTheme.objects.create(name="Mars")
 
 
 @pytest.fixture
 def another_show_theme():
-    return ShowTheme.objects.create(name="Comedy")
+    return ShowTheme.objects.create(name="Venus")
 
 
 @pytest.fixture
