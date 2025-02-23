@@ -1,6 +1,5 @@
 from django.db import transaction
 from rest_framework import serializers
-from rest_framework.generics import get_object_or_404
 
 from planetarium.models import (
     ShowTheme,
@@ -36,6 +35,20 @@ class EventSerializer(serializers.ModelSerializer):
         fields = ("id", "event_time", "show", "dome")
 
 
+class AddEventToShowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = (
+            "id",
+            "event_time",
+            "dome",
+        )
+
+    def create(self, validated_data):
+        show = self.context["show"]
+        return Event.objects.create(show=show, **validated_data)
+
+
 class EventListSerializer(EventSerializer):
     show_title = serializers.CharField(source="show.title", read_only=True)
     dome_name = serializers.CharField(source="dome.name", read_only=True)
@@ -50,17 +63,18 @@ class EventListSerializer(EventSerializer):
         )
 
 
-class ShowPosterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Show
-        fields = ("id", "poster")
+class ShowAddEventSerializer(serializers.Serializer):
+    events = AddEventToShowSerializer(many=True)
+
+    def create(self, validated_data):
+        return [
+            Event.objects.create(show=self.context["show"], **event_data)
+            for event_data in validated_data["events"]
+        ]
 
 
 class ShowSerializer(serializers.ModelSerializer):
-    poster = serializers.ImageField(read_only=False, required=False, allow_null=True)
-    events = EventSerializer(
-        write_only=True, many=True, allow_null=True, required=False
-    )
+    poster = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Show
@@ -69,7 +83,6 @@ class ShowSerializer(serializers.ModelSerializer):
             "title",
             "description",
             "show_themes",
-            "events",
             "poster",
         )
 
