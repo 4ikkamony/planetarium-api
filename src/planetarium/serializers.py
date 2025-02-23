@@ -1,6 +1,6 @@
 from django.db import transaction
 from rest_framework import serializers
-
+from rest_framework.generics import get_object_or_404
 
 from planetarium.models import (
     ShowTheme,
@@ -140,6 +140,22 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = ("id", "row", "seat", "event", "ticket_type")
+
+    def validate(self, data):
+        event = self.context.get("event")
+        row = data.get("row")
+        seat = data.get("seat")
+
+        if not event or not event.dome:
+            raise serializers.ValidationError("Invalid event or event has no associated dome.")
+
+        if not (1 <= row <= event.dome.rows):
+            raise serializers.ValidationError(f"Row must be between 1 and {event.dome.rows}.")
+
+        if not (1 <= seat <= event.dome.seats_in_row):
+            raise serializers.ValidationError(f"Seat must be between 1 and {event.dome.seats_in_row}.")
+
+        return data
 
 
 class TicketListSerializer(TicketSerializer):
