@@ -60,21 +60,21 @@ booking_list_schema = {
                                         "id": 3,
                                         "event_time": "2025-02-24T09:00:00Z",
                                         "show_title": "Our Earth: From Birth to Dawn of Humankind",
-                                        "dome_name": "Harris Peterson Planetarium"
+                                        "dome_name": "Harris Peterson Planetarium",
                                     },
                                     "ticket_type": {
                                         "id": 1,
                                         "category": "adult",
-                                        "price": "480.00"
-                                    }
+                                        "price": "480.00",
+                                    },
                                 }
                             ],
-                            "created_at": "2025-02-22T13:56:54.627000Z"
+                            "created_at": "2025-02-22T13:56:54.627000Z",
                         }
                     ],
-                    response_only=True
+                    response_only=True,
                 )
-            ]
+            ],
         )
-    }
+    },
 }

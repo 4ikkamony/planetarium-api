@@ -117,17 +117,14 @@ class EventViewSet(viewsets.ModelViewSet):
         )
 
 
-@extend_schema_view(
-    get=extend_schema(**booking_list_schema)
-)
+@extend_schema_view(get=extend_schema(**booking_list_schema))
 class BookingListView(generics.ListAPIView):
     serializer_class = BookingListSerializer
 
     queryset = Booking.objects.prefetch_related(
         "tickets__ticket_type",
         Prefetch(
-            "tickets__event",
-            queryset=Event.objects.select_related("show", "dome")
+            "tickets__event", queryset=Event.objects.select_related("show", "dome")
         ),
     )
     filter_backends = [DjangoFilterBackend]
