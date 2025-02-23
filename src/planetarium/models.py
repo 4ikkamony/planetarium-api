@@ -1,6 +1,7 @@
 import os
 import uuid
 
+from django.core.validators import MinValueValidator
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
@@ -11,8 +12,8 @@ class Dome(models.Model):
     """Location where shows take place"""
 
     name = models.CharField(max_length=255)
-    rows = models.IntegerField()
-    seats_in_row = models.IntegerField()
+    rows = models.IntegerField(validators=[MinValueValidator(1)])
+    seats_in_row = models.IntegerField(validators=[MinValueValidator(1)])
 
     def __str__(self) -> str:
         return self.name
@@ -99,8 +100,8 @@ class TicketType(models.Model):
 class Ticket(models.Model):
     """A ticket for a specific Event"""
 
-    row = models.IntegerField()
-    seat = models.IntegerField()
+    row = models.IntegerField(validators=[MinValueValidator(1)])
+    seat = models.IntegerField(validators=[MinValueValidator(1)])
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="tickets")
     booking = models.ForeignKey(
         Booking, on_delete=models.CASCADE, related_name="tickets"
