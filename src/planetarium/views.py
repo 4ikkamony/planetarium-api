@@ -1,5 +1,6 @@
 from django.db.models import F, Count, Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import viewsets, mixins, status, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -7,6 +8,11 @@ from rest_framework.viewsets import GenericViewSet
 
 from planetarium.models import ShowTheme, Dome, Show, Event, Booking
 from planetarium.filters import ShowSearchFilter, BookingFilter
+from planetarium.schemas.events import (
+    book_tickets_schema,
+    event_list_schema,
+    event_detail_schema,
+)
 from planetarium.serializers import (
     ShowThemeSerializer,
     DomeSerializer,
@@ -69,6 +75,11 @@ class ShowViewSet(
         return ShowSerializer
 
 
+@extend_schema_view(
+    list=extend_schema(**event_list_schema),
+    retrieve=extend_schema(**event_detail_schema),
+    book_tickets=extend_schema(**book_tickets_schema),
+)
 class EventViewSet(viewsets.ModelViewSet):
     queryset = (
         Event.objects.all()
