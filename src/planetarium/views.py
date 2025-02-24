@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.db.models import F, Count, Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -144,6 +145,7 @@ class EventViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     @action(detail=True, methods=["POST"], url_path="book-tickets")
+    @transaction.atomic
     def book_tickets(self, request, pk=None):
         event = self.get_object()
         serializer = BookingCreateSerializer(
