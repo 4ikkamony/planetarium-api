@@ -1,0 +1,24 @@
+FROM python:3.13
+
+
+WORKDIR /usr/src/
+
+COPY ./requirements requirements
+
+RUN python -m pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements/dev.txt
+
+WORKDIR /usr/src/app/
+
+COPY ./src/ .
+
+COPY ./commands /usr/src/commands
+
+RUN adduser --disabled-password --no-create-home django-user
+
+RUN mkdir -p /usr/src/app/media/uploads/ \
+    && chown -R django-user:django-user /usr/src/app/media/ \
+    && chmod -R 755 /usr/src/app/media/ \
+    && chmod -R +x /usr/src/commands/
+
+USER django-user
