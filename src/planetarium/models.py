@@ -74,6 +74,9 @@ class Booking(models.Model):
     def __str__(self) -> str:
         return f"Booking {self.created_at} by {self.user}"
 
+    def calculate_booking_price(self):
+        return sum(ticket.ticket_type.price for ticket in self.tickets.all())
+
 
 class TicketType(models.Model):
     """Different ticket categories and their prices"""

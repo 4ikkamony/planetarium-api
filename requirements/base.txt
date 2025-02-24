@@ -16,5 +16,6 @@ pytest==8.3.4
 pytest-django==4.10.0
 referencing==0.36.2
 rpds-py==0.22.3
+stripe==11.5.0
 sqlparse==0.5.3
 uritemplate==4.1.1
