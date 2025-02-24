@@ -23,6 +23,22 @@ class CheckoutSessionCreateView(APIView):
             )
 
         booking = get_object_or_404(Booking, id=booking_id)
+        if booking.payment is not None:
+            payment_status = booking.payment.status
+            if payment_status == "pending":
+                return Response(
+                    {
+                        "message": "Checkout session already exists",
+                        "session_id": booking.payment.session_id,
+                        "session_url": booking.payment.session_url,
+                    },
+                    status=status.HTTP_303_SEE_OTHER,
+                )
+            elif payment_status == "completed":
+                return Response(
+                    {"message": "Booking was already paid for"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         amount = booking.calculate_booking_price()
         amount_kopiyok = int(amount * 100)
@@ -67,7 +83,10 @@ class CheckoutSessionCreateView(APIView):
             session_url=session.url,
         )
 
-        return Response({"session_id": session.id, "session_url": session.url})
+        return Response(
+            {"session_id": session.id, "session_url": session.url},
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class CheckoutSessionSuccessView(APIView):
@@ -92,13 +111,9 @@ class CheckoutSessionSuccessView(APIView):
                             "booking_id": payment.booking.id,
                         }
                     )
-
-                return Response(
-                    {"error": "Booking not found"}, status=status.HTTP_404_NOT_FOUND
-                )
-
             return Response(
-                {"error": "Payment not completed"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "Payment was not completed"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         except stripe.error.StripeError as e:
@@ -124,7 +139,7 @@ class CheckoutSessionCancelView(APIView):
             payment.save()
         return Response(
             {
-                "message": "Payment was cancelled. You can try again.",
+                "message": "Payment was cancelled.",
                 "session_id": session.id,
                 "session_url": session.url,
             }
