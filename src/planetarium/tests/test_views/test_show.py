@@ -1,40 +1,9 @@
 import pytest
-from datetime import datetime, timedelta
 from django.urls import reverse
-from django.utils.timezone import make_aware
 from rest_framework import status
 
-from planetarium.models import Show, ShowTheme, Dome, Event
+from planetarium.models import Show, Event
 from planetarium.serializers import ShowDetailSerializer
-
-
-@pytest.fixture
-def show_theme():
-    return ShowTheme.objects.create(name="Mars")
-
-
-@pytest.fixture
-def another_show_theme():
-    return ShowTheme.objects.create(name="Venus")
-
-
-@pytest.fixture
-def dome():
-    return Dome.objects.create(name="Main Dome", rows=10, seats_in_row=20)
-
-
-@pytest.fixture
-def show(show_theme):
-    s = Show.objects.create(title="Test Show", description="A test description")
-    s.show_themes.add(show_theme)
-    return s
-
-
-@pytest.fixture
-def another_show(another_show_theme):
-    s = Show.objects.create(title="Another Show", description="Another description")
-    s.show_themes.add(another_show_theme)
-    return s
 
 
 @pytest.fixture
@@ -45,11 +14,6 @@ def create_shows(show_theme, another_show_theme):
     show2.show_themes.add(another_show_theme)
     show3 = Show.objects.create(title="Show 3", description="Desc 3")
     return [show1, show2, show3]
-
-
-@pytest.fixture
-def future_date():
-    return make_aware(datetime.now() + timedelta(days=1))
 
 
 @pytest.fixture
