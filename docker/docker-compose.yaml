@@ -1,6 +1,6 @@
 services:
   web:
-    restart: always
+    restart: unless-stopped
     build:
       context: ..
       dockerfile: docker/Dockerfile
@@ -19,6 +19,7 @@ services:
       - planetarium-network
 
   db:
+    restart: unless-stopped
     image: "postgres:alpine"
     container_name: postgres-planetarium
     env_file:
@@ -36,8 +37,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-
-
 
 volumes:
   postgres_planetarium_data:
