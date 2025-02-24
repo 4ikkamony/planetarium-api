@@ -1,20 +1,28 @@
 import stripe
 from django.conf import settings
+from django.db import transaction
 from django.urls import reverse
+from drf_spectacular.utils import extend_schema_view
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Payment
+from payment.models import Payment
 from planetarium.models import Booking
-
+from payment.schemas.checkout_sessions import (
+    checkout_session_create_schema,
+    checkout_session_cancel_schema,
+    checkout_session_success_schema,
+)
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
+@extend_schema_view(post=checkout_session_create_schema)
 class CheckoutSessionCreateView(APIView):
     permission_classes = ()
 
+    @transaction.atomic
     def post(self, request):
         booking_id = request.data.get("booking_id")
         if not booking_id:
@@ -90,9 +98,13 @@ class CheckoutSessionCreateView(APIView):
         )
 
 
+@extend_schema_view(
+    get=checkout_session_success_schema,
+)
 class CheckoutSessionSuccessView(APIView):
     permission_classes = ()
 
+    @transaction.atomic
     def get(self, request):
         session_id = request.GET.get("session_id")
         if not session_id:
@@ -123,9 +135,13 @@ class CheckoutSessionSuccessView(APIView):
             )
 
 
+@extend_schema_view(
+    get=checkout_session_cancel_schema,
+)
 class CheckoutSessionCancelView(APIView):
     permission_classes = ()
 
+    @transaction.atomic
     def get(self, request):
         session_id = request.GET.get("session_id")
         try:
