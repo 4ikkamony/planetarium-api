@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db import transaction
 from rest_framework import serializers
 
@@ -94,7 +96,7 @@ class EventDateSerializer(serializers.ModelSerializer):
         model = Event
         fields = ("event_date",)
 
-    def get_event_date(self, obj):
+    def get_event_date(self, obj) -> date:
         return obj.event_time.date()
 
 
