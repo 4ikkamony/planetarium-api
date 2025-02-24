@@ -23,14 +23,15 @@ class CheckoutSessionCreateView(APIView):
             )
 
         booking = get_object_or_404(Booking, id=booking_id)
-        if booking.payment is not None:
-            payment_status = booking.payment.status
+        payment = getattr(booking, "payment", None)
+        if payment is not None:
+            payment_status = payment.status
             if payment_status == "pending":
                 return Response(
                     {
                         "message": "Checkout session already exists",
-                        "session_id": booking.payment.session_id,
-                        "session_url": booking.payment.session_url,
+                        "session_id": payment.session_id,
+                        "session_url": payment.session_url,
                     },
                     status=status.HTTP_303_SEE_OTHER,
                 )
