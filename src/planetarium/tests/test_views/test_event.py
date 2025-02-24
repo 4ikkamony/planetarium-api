@@ -41,7 +41,9 @@ def test_book_tickets_unauthenticated(api_client, event, ticket_type):
 
 
 @pytest.mark.django_db
-def test_book_tickets_authenticated(api_client_regular, regular_user, event, ticket_type):
+def test_book_tickets_authenticated(
+    api_client_regular, regular_user, event, ticket_type
+):
     client = api_client_regular
     url = reverse("planetarium:event-book-tickets", args=[event.id])
     payload = {"tickets": [{"row": 1, "seat": 1, "ticket_type": ticket_type.id}]}
