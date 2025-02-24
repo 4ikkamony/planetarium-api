@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "planetarium",
     "user",
+    "payment",
 ]
 
 MIDDLEWARE = [
@@ -151,7 +152,6 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
 }
-
 
 
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
