@@ -1,0 +1,1371 @@
+openapi: 3.0.3
+info:
+  title: Planetarium API
+  version: '0.1'
+  description: API for managing planetarium
+paths:
+  /api/payment/stripe/checkout/cancel/:
+    get:
+      operationId: payment_stripe_checkout_cancel_retrieve
+      description: Cancel a Stripe Checkout Session, marking the payment as cancelled.
+      tags:
+      - payment
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Payment was cancelled.
+                  session_id:
+                    type: string
+                    example: cs_test_abc123
+                  session_url:
+                    type: string
+                    example: https://checkout.stripe.com/pay/cs_test_abc123
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'Stripe error: <error message>'
+          description: ''
+  /api/payment/stripe/checkout/create/:
+    post:
+      operationId: payment_stripe_checkout_create_create
+      description: Create a new Stripe Checkout Session for a Booking. Accepts a booking_id
+        and returns a session_id and session_url.
+      tags:
+      - payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                booking_id:
+                  type: integer
+                  example: 1
+              required:
+              - booking_id
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_id:
+                    type: string
+                    example: cs_test_abc123
+                  session_url:
+                    type: string
+                    example: https://checkout.stripe.com/pay/cs_test_abc123
+          description: ''
+        '303':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Checkout session already exists
+                  session_id:
+                    type: string
+                    example: cs_test_existing
+                  session_url:
+                    type: string
+                    example: https://checkout.stripe.com/pay/cs_test_existing
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Booking was already paid for or Booking ID is required
+          description: ''
+        '500':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'Stripe error: <error message>'
+          description: ''
+  /api/payment/stripe/checkout/success/:
+    get:
+      operationId: payment_stripe_checkout_success_retrieve
+      description: Retrieve a Stripe Checkout Session and mark the payment as successful
+        if completed.
+      tags:
+      - payment
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Payment successful
+                  booking_id:
+                    type: integer
+                    example: 1
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Payment was not completed
+          description: ''
+  /api/planetarium/bookings/:
+    get:
+      operationId: planetarium_bookings_list
+      parameters:
+      - in: query
+        name: dome_id
+        schema:
+          type: integer
+        description: Filter by Dome ID.
+      - in: query
+        name: event_id
+        schema:
+          type: integer
+        description: Filter by Event ID.
+      - in: query
+        name: event_time_after
+        schema:
+          type: string
+          format: date
+        description: Filter events with event_time on or after this date.
+      - in: query
+        name: event_time_before
+        schema:
+          type: string
+          format: date
+        description: Filter events with event_time on or before this date.
+      - in: query
+        name: show_id
+        schema:
+          type: integer
+        description: Filter by Show ID.
+      tags:
+      - planetarium
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookingList'
+              examples:
+                BookingListExample:
+                  value:
+                  - - id: 1
+                      tickets:
+                      - id: 1
+                        row: 1
+                        seat: 1
+                        event:
+                          id: 3
+                          event_time: '2025-02-24T09:00:00Z'
+                          show_title: 'Our Earth: From Birth to Dawn of Humankind'
+                          dome_name: Harris Peterson Planetarium
+                        ticket_type:
+                          id: 1
+                          category: adult
+                          price: '480.00'
+                      created_at: '2025-02-22T13:56:54.627000Z'
+                  summary: Booking List Example
+          description: List of bookings
+  /api/planetarium/domes/:
+    get:
+      operationId: planetarium_domes_list
+      tags:
+      - planetarium
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Dome'
+          description: ''
+    post:
+      operationId: planetarium_domes_create
+      tags:
+      - planetarium
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Dome'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Dome'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Dome'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dome'
+          description: ''
+  /api/planetarium/events/:
+    get:
+      operationId: planetarium_events_list
+      tags:
+      - planetarium
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventList'
+              examples:
+                ListOfEventsExample:
+                  value:
+                  - - id: 4
+                      event_time: '2025-02-25T09:00:00Z'
+                      show_title: Neutron Stars
+                      dome_name: Harris Peterson Planetarium
+                    - id: 2
+                      event_time: '2025-02-24T15:00:00Z'
+                      show_title: 'Our Earth: From Birth to Dawn of Humankind'
+                      dome_name: Harris Peterson Planetarium
+                  summary: List of events example
+          description: List of events
+    post:
+      operationId: planetarium_events_create
+      tags:
+      - planetarium
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Event'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Event'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+          description: ''
+  /api/planetarium/events/{id}/:
+    get:
+      operationId: planetarium_events_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this event.
+        required: true
+      tags:
+      - planetarium
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventDetail'
+              examples:
+                ExistingEventExample:
+                  value:
+                    id: 1
+                    event_time: '2025-02-24T13:00:00Z'
+                    show: 1
+                    dome:
+                      id: 1
+                      name: Harris Peterson Planetarium
+                      rows: 10
+                      seats_in_row: 12
+                    taken_seats:
+                    - row: 1
+                      seat: 1
+                  summary: Existing event example
+          description: Event details
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                EventNotFoundExample:
+                  value:
+                    detail: No Event matches the given query.
+                  summary: Event not found example
+          description: Event not found
+    put:
+      operationId: planetarium_events_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this event.
+        required: true
+      tags:
+      - planetarium
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Event'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Event'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+          description: ''
+    patch:
+      operationId: planetarium_events_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this event.
+        required: true
+      tags:
+      - planetarium
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEvent'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEvent'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEvent'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+          description: ''
+    delete:
+      operationId: planetarium_events_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this event.
+        required: true
+      tags:
+      - planetarium
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/planetarium/events/{id}/book-tickets/:
+    post:
+      operationId: planetarium_events_book_tickets_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Event ID
+        required: true
+      tags:
+      - planetarium
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookingCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookingCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  booking_id:
+                    type: integer
+              examples:
+                CreateBookingExample:
+                  value:
+                    message: Booking successful
+                    booking_id: 1
+                  summary: Create booking example
+          description: Booking created
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tickets:
+                    type: array
+                    items:
+                      type: string
+              examples:
+                SeatAlreadyTaken:
+                  value:
+                    tickets:
+                    - Seat (1, 1) is already taken.
+                  summary: Seat Already Taken
+          description: Bad Request - Validation Error (Seat already taken)
+  /api/planetarium/show-themes/:
+    get:
+      operationId: planetarium_show_themes_list
+      tags:
+      - planetarium
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShowTheme'
+          description: ''
+    post:
+      operationId: planetarium_show_themes_create
+      tags:
+      - planetarium
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShowTheme'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShowTheme'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShowTheme'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShowTheme'
+          description: ''
+  /api/planetarium/shows/:
+    get:
+      operationId: planetarium_shows_list
+      description: Get list of Shows
+      parameters:
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search term for search on title and description.
+      - in: query
+        name: show_themes
+        schema:
+          type: integer
+        description: Filter shows by theme id
+      tags:
+      - planetarium
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShowList'
+              examples:
+                ShowListExample:
+                  value:
+                  - - id: 1
+                      title: 'Our Earth: From Birth to Dawn of Humankind'
+                      description: A breathtaking journey through time.
+                      show_themes:
+                      - Earth
+                      - Solar System
+                      events_count: 3
+                      poster: http://127.0.0.1:8000/media/uploads/shows/poster1.jpeg
+                  summary: Show List Example
+                Search:Earth:
+                  value:
+                  - - id: 1
+                      title: 'Our Earth: From Birth to Dawn of Humankind'
+                      description: Embark on a breathtaking journey through our planet's
+                        history!
+                      show_themes:
+                      - Earth
+                      - Solar System
+                      events_count: 3
+                      events_dates:
+                      - event_date: '2025-02-24'
+                      - event_date: '2025-02-24'
+                      - event_date: '2025-02-24'
+                      poster: http://127.0.0.1:8000/media/uploads/shows/planet-earth-from-birth-to-dawn-of-humankind-4f429d0a-50b6-4005-9291-44ffaac2cd96.jpeg
+                    - id: 3
+                      title: 'Gas Giants: Our Faithful Guardians'
+                      description: This show, accompanied by breathtaking visuals,
+                        will explore the vital role gas giants play in protecting
+                        Earth from asteroids
+                      show_themes:
+                      - Solar System
+                      events_count: 0
+                      events_dates: []
+                      poster: http://127.0.0.1:8000/media/uploads/shows/gas-giants-out-faithful-guardians-72fcd169-de76-4f0b-a426-0e50855bb9c9.jpg
+                  summary: Example response for search=earth
+          description: List of shows
+    post:
+      operationId: planetarium_shows_create
+      description: Create a new show. It has title, description, show_themes and poster
+        fields
+      tags:
+      - planetarium
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: 'Mars: New Home'
+                description:
+                  type: string
+                  example: Is life on Mars possible? Find out!
+                show_themes:
+                  type: array
+                  items:
+                    type: integer
+                  example:
+                  - 6
+                poster:
+                  type: string
+                  format: binary
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Show'
+              examples:
+                ShowCreateResponseExample:
+                  value:
+                    id: 1
+                    title: 'Our Earth: From Birth to Dawn of Humankind'
+                    description: A breathtaking journey through time.
+                    show_themes:
+                    - 1
+                    - 2
+                    poster: http://127.0.0.1:8000/media/uploads/shows/poster1.jpeg
+                  summary: Show Create Response Example
+          description: Show successfully created
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                MissingRequiredFieldsExample:
+                  value:
+                    title:
+                    - This field may not be blank.
+                    description:
+                    - This field may not be blank.
+                  summary: Missing required fields example
+          description: Bad Request - Missing required fields
+  /api/planetarium/shows/{id}/:
+    get:
+      operationId: planetarium_shows_retrieve
+      description: 'Get detailed display of a Show. '
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this show.
+        required: true
+      tags:
+      - planetarium
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShowDetail'
+              examples:
+                ShowDetailExample:
+                  value:
+                    id: 1
+                    title: 'Our Earth: From Birth to Dawn of Humankind'
+                    description: Detailed description of the show.
+                    show_themes:
+                    - id: 1
+                      name: Earth
+                    - id: 2
+                      name: Solar System
+                    poster: http://127.0.0.1:8000/media/uploads/shows/poster1.jpeg
+                    events:
+                    - id: 3
+                      event_time: '2025-02-24T09:00:00Z'
+                      show_title: 'Our Earth: From Birth to Dawn of Humankind'
+                      dome_name: Harris Peterson Planetarium
+                  summary: Show Detail Example
+          description: Detailed show information
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: Not Found - Show not found.
+  /api/planetarium/shows/{id}/add-event/:
+    post:
+      operationId: planetarium_shows_add_event_create
+      description: Add events to a specific show.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this show.
+        required: true
+      tags:
+      - planetarium
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShowAddEvent'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShowAddEvent'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShowAddEvent'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShowAddEvent'
+          description: ''
+  /api/user/me/:
+    get:
+      operationId: user_me_retrieve
+      tags:
+      - user
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: user_me_update
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: user_me_partial_update
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/user/register/:
+    post:
+      operationId: user_register_create
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/user/token/:
+    post:
+      operationId: user_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/user/token/refresh/:
+    post:
+      operationId: user_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/user/token/verify/:
+    post:
+      operationId: user_token_verify_create
+      description: |-
+        Takes a token and indicates if it is valid.  This view provides no
+        information about a token's fitness for a particular use.
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenVerify'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenVerify'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenVerify'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenVerify'
+          description: ''
+components:
+  schemas:
+    AddEventToShow:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        event_time:
+          type: string
+          format: date-time
+        dome:
+          type: integer
+      required:
+      - dome
+      - event_time
+      - id
+    BookingCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        tickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ticket'
+          writeOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - tickets
+    BookingList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        tickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketList'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - tickets
+    CategoryEnum:
+      enum:
+      - adult
+      - student
+      - child
+      - wheelchair
+      - companion
+      type: string
+      description: |-
+        * `adult` - Adult
+        * `student` - Student
+        * `child` - Child
+        * `wheelchair` - Wheelchair User
+        * `companion` - Companion
+    Dome:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        rows:
+          type: integer
+          maximum: 2147483647
+          minimum: 1
+        seats_in_row:
+          type: integer
+          maximum: 2147483647
+          minimum: 1
+      required:
+      - id
+      - name
+      - rows
+      - seats_in_row
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        event_time:
+          type: string
+          format: date-time
+        show:
+          type: integer
+        dome:
+          type: integer
+      required:
+      - dome
+      - event_time
+      - id
+      - show
+    EventDate:
+      type: object
+      properties:
+        event_date:
+          type: string
+          format: date
+          readOnly: true
+      required:
+      - event_date
+    EventDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        event_time:
+          type: string
+          format: date-time
+        show:
+          type: integer
+        dome:
+          allOf:
+          - $ref: '#/components/schemas/Dome'
+          readOnly: true
+        taken_seats:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketSeats'
+          readOnly: true
+      required:
+      - dome
+      - event_time
+      - id
+      - show
+      - taken_seats
+    EventList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        event_time:
+          type: string
+          format: date-time
+        show_title:
+          type: string
+          readOnly: true
+        dome_name:
+          type: string
+          readOnly: true
+      required:
+      - dome_name
+      - event_time
+      - id
+      - show_title
+    PatchedEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        event_time:
+          type: string
+          format: date-time
+        show:
+          type: integer
+        dome:
+          type: integer
+    PatchedUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+          minLength: 5
+        is_staff:
+          type: boolean
+          readOnly: true
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+    Show:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        show_themes:
+          type: array
+          items:
+            type: integer
+        poster:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - description
+      - id
+      - show_themes
+      - title
+    ShowAddEvent:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddEventToShow'
+      required:
+      - events
+    ShowDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        show_themes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShowTheme'
+          readOnly: true
+        poster:
+          type: string
+          format: uri
+          nullable: true
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventList'
+          readOnly: true
+      required:
+      - description
+      - events
+      - id
+      - show_themes
+      - title
+    ShowList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        show_themes:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        events_count:
+          type: integer
+          readOnly: true
+        events_dates:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventDate'
+          readOnly: true
+        poster:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - description
+      - events_count
+      - events_dates
+      - id
+      - show_themes
+      - title
+    ShowTheme:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+      required:
+      - id
+      - name
+    Ticket:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        row:
+          type: integer
+          maximum: 2147483647
+          minimum: 1
+        seat:
+          type: integer
+          maximum: 2147483647
+          minimum: 1
+        event:
+          type: integer
+          readOnly: true
+        ticket_type:
+          type: integer
+      required:
+      - event
+      - id
+      - row
+      - seat
+      - ticket_type
+    TicketList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        row:
+          type: integer
+          maximum: 2147483647
+          minimum: 1
+        seat:
+          type: integer
+          maximum: 2147483647
+          minimum: 1
+        event:
+          allOf:
+          - $ref: '#/components/schemas/EventList'
+          readOnly: true
+        ticket_type:
+          allOf:
+          - $ref: '#/components/schemas/TicketType'
+          readOnly: true
+      required:
+      - event
+      - id
+      - row
+      - seat
+      - ticket_type
+    TicketSeats:
+      type: object
+      properties:
+        row:
+          type: integer
+          maximum: 2147483647
+          minimum: 1
+        seat:
+          type: integer
+          maximum: 2147483647
+          minimum: 1
+      required:
+      - row
+      - seat
+    TicketType:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+      required:
+      - category
+      - id
+    TokenObtainPair:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - email
+      - password
+      - refresh
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    TokenVerify:
+      type: object
+      properties:
+        token:
+          type: string
+          writeOnly: true
+      required:
+      - token
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+          minLength: 5
+        is_staff:
+          type: boolean
+          readOnly: true
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+      required:
+      - email
+      - id
+      - is_staff
+      - password
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
