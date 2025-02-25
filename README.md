@@ -17,7 +17,7 @@ This is the **Planetarium Management API**, built with Django and Django REST Fr
    - [Run the App in a Docker Container](#-run-the-app-in-a-docker-container)
    - [Run the App Locally](#-run-locally-with-just-a-database-container)
 5. [After Installation](#-after-installation)
-6. [Usage Guide](#usage-guide)
+   - [Usage Guide](#usage-guide)
 ---
 
 ## Features
@@ -134,8 +134,8 @@ The steps are almost the same, except you'll be running the backend locally whil
 ## 📖 After Installation  
 Visit Swagger API Docs at http://127.0.0.1:8000/api/doc/swagger/ to see available endpoints and some example requests.
 
-## Usage guide
-### Login
+### Usage guide
+#### Login
 - If you have loaded the sample data, you can use these credentials:
 
   **Email**
