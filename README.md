@@ -28,8 +28,6 @@ The rest of the values may be left as default, since we're running locally
 docker compose -f docker/docker-compose.yaml up
 ```
 
-Visit http://127.0.0.1:8000/api/doc/swagger/ to see available endpoints
-
 To run tests when container is running:
 ```sh
 docker exec -it planetarium-backend pytest
@@ -73,3 +71,5 @@ To run tests, when in src/ run:
 ```sh
 pytest
 ```
+# After installation
+## Visit http://127.0.0.1:8000/api/doc/swagger/ to see available endpoints(and some examples)
