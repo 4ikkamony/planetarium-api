@@ -53,7 +53,8 @@ This is the **Planetarium Management API**, built with Django and Django REST Fr
    - Fill in your [Stripe API Keys](https://support.stripe.com/questions/what-are-stripe-api-keys-and-how-to-find-them):  
      - STRIPE_PUBLISHABLE_KEY  
      - STRIPE_SECRET_KEY  
-   - The rest can be left as default for local development.  
+   - The rest can be left as default for local setup.
+     Make sure POSTGRES_HOST set to 'db'(it's default postgres container name in this project)
 
 4. **Start the containers**  
    **On Linux**
