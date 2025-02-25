@@ -48,7 +48,7 @@ This is the **Planetarium Management API**, built with Django and Django REST Fr
    ```sh
    docker compose -f docker/docker-compose.yaml up  
    ```
-5. **Run tests (while the container is running)**  
+5. **🧪 Run tests (while the container is running)**  
    ```sh
    docker exec -it planetarium-backend pytest  
    ```
@@ -90,7 +90,7 @@ The steps are almost the same, except you'll be running the backend locally whil
    python manage.py runserver  
    ```
 
-6. **Run tests(when in src/)**   
+6. **🧪 Run tests(when in src/)**   
    ```sh
    pytest
    ```  
