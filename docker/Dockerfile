@@ -13,6 +13,10 @@ COPY ./src/ .
 
 COPY ./commands /usr/src/commands
 
+RUN apk update && apk add --no-cache dos2unix
+
+RUN dos2unix /usr/src/commands/*.sh
+
 RUN adduser --disabled-password --no-create-home django-user
 
 RUN mkdir -p /usr/src/app/media/uploads/ \
