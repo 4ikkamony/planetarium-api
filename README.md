@@ -13,6 +13,7 @@ This is the **Planetarium Management API**, built with Django and Django REST Fr
 
 ---
 # Contents
+
 1. [Features](#features)
 3. [Installation](#-installation)
    - [Run the App in a Docker Container](#-run-the-app-in-a-docker-container)
@@ -47,6 +48,7 @@ This is the **Planetarium Management API**, built with Django and Django REST Fr
    ```  
 
 3. **Set up environment variables**  
+
    ```sh
    mv docker/.env.sample docker/.env
    ```  
@@ -57,16 +59,14 @@ This is the **Planetarium Management API**, built with Django and Django REST Fr
    - The rest can be left as default for local setup.
      Make sure POSTGRES_HOST set to 'db'(it's default postgres container name in this project)
 
-4. **Start the containers**  
-   **On Linux**
+5. **Start the containers**  
+
    ```sh
-   nohup docker compose -f docker/docker-compose.yaml up &
+   docker compose -f docker/docker-compose.yaml up -d
    ```
-   **On Windows**
-   ```sh
-   start docker compose -f docker/docker-compose.yaml up
-   ```
-5. **🧪 Run tests (while the container is running)**  
+
+6. **🧪 Run tests (while the container is running)**  
+
    ```sh
    docker exec -it planetarium-backend pytest  
    ```
@@ -80,6 +80,7 @@ This is the **Planetarium Management API**, built with Django and Django REST Fr
 The steps are almost the same, except you'll be running the backend locally while using the database inside Docker.
 
 1. **Clone the repository**  
+
    ```sh
    git clone -b dev git@github.com:4ikkamony/planetarium-api.git  
    ```
@@ -87,7 +88,8 @@ The steps are almost the same, except you'll be running the backend locally whil
    cd planetarium-api  
    ```
 
-2. **Configure virtual environment**
+3. **Configure virtual environment**
+
    ```sh
    python -m venv .venv
    ```
@@ -100,34 +102,34 @@ The steps are almost the same, except you'll be running the backend locally whil
    .venv\Scripts\activate
    ```
 
-3. **Install requirements**
+5. **Install requirements**
+
    ```sh
    pip install -r requirements/dev.txt
    ```
    
-5. **Set up environment variables**  
+7. **Set up environment variables**  
+
    ```sh
    mv docker/.env.sample docker/.env  
    ```
    - Fill in your [Stripe API Keys](https://support.stripe.com/questions/what-are-stripe-api-keys-and-how-to-find-them).  
    - Set **POSTGRES_HOST**=localhost to connect to the database container.  
 
-6. **Start only the database container**  
-   **On Linux**
+9. **Start only the database container**  
+
    ```sh
-   nohup docker compose -f docker/docker-compose-local.yaml up &
-   ```
-   **On Windows**
-   ```sh
-   start docker compose -f docker/docker-compose-local.yaml up
+   docker compose -f docker/docker-compose-local.yaml up -d
    ```
 
-8. **Navigate to the source directory**  
+11. **Navigate to the source directory**  
+   
    ```sh
    cd src  
    ```
    
-9. **Apply migrations, load initial data, and run the server**  
+11. **Apply migrations, load initial data, and run the server**  
+   
    ```sh
    python manage.py migrate
    ```
