@@ -30,6 +30,11 @@ docker compose -f docker/docker-compose.yaml up
 
 Visit http://127.0.0.1:8000/api/doc/swagger/ to see available endpoints
 
+To run tests when container is running:
+```sh
+docker exec -it planetarium-backend pytest
+```
+
 ## Run app localy with DB cointainer
 
 The steps almost the same:
@@ -62,4 +67,9 @@ python manage.py makemigrations && \
 python manage.py migrate && \
 python manage.py loaddata data/planetarium_db_data.json && \
 python manage.py runserver
+```
+
+To run tests, when in src/ run:
+```sh
+pytest
 ```
