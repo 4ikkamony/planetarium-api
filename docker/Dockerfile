@@ -22,6 +22,7 @@ RUN adduser --disabled-password --no-create-home django-user
 RUN mkdir -p /usr/src/app/media/uploads/ \
     && chown -R django-user:django-user /usr/src/app/media/ \
     && chmod -R 755 /usr/src/app/media/ \
-    && chmod -R +x /usr/src/commands/
+    && chmod -R +x /usr/src/commands/ \
+    && chmod -R 777 /usr/src/app
 
 USER django-user
