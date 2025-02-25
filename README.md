@@ -94,7 +94,7 @@ The steps are almost the same, except you'll be running the backend locally whil
 
 3. **Install requirements**
    ```sh
-   pip install requirements/dev.txt
+   pip install -r requirements/dev.txt
    ```
    
 5. **Set up environment variables**  
