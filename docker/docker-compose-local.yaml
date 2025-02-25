@@ -3,7 +3,7 @@ services:
     image: 'postgres:latest'
     container_name: postgres-planetarium
     env_file:
-      - ../src/.env
+      - .env
     ports:
       - "5432:5432"
     volumes:
