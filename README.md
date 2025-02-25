@@ -11,6 +11,14 @@
 This is the **Planetarium Management API**, built with Django and Django REST Framework.
 
 ---
+# Contents
+1. [Features](#features)
+3. [Installation](#-installation)
+   - [Run the App in a Docker Container](#-run-the-app-in-a-docker-container)
+   - [Run the App Locally](#-run-locally-with-just-a-database-container)
+5. [After Installation](#-after-installation)
+6. [Usage Guide](#usage-guide)
+---
 
 ## Features
 
@@ -20,6 +28,8 @@ This is the **Planetarium Management API**, built with Django and Django REST Fr
 - PostgreSQL full-text and trinagam similarity search for Shows
 - Stripe Checkout Sessions for payments
 - Fully containerized with Docker
+
+[⬆️](#contents)
 
 ---
 ## 🚀 Installation
@@ -55,7 +65,9 @@ This is the **Planetarium Management API**, built with Django and Django REST Fr
    ```
 ---
 
-### 💻 Run Locally with a Database Container
+[⬆️](#contents)
+
+### 💻 Run Locally with just a Database Container
 
 The steps are almost the same, except you'll be running the backend locally while using the database inside Docker.
 
@@ -115,6 +127,8 @@ The steps are almost the same, except you'll be running the backend locally whil
    pytest
    ```  
 
+[⬆️](#contents)
+
 ---
 
 ## 📖 After Installation  
@@ -141,4 +155,7 @@ Visit Swagger API Docs at http://127.0.0.1:8000/api/doc/swagger/ to see availabl
     Except for http://127.0.0.1:8000/api/planetarium/bookings, where bookings of a currently logged in
     user are displayed.
   
+
 🛠️ *Under construction...*
+
+[⬆️](#contents)
