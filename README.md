@@ -23,6 +23,7 @@ This is the **Planetarium Management API**, built with Django and Django REST Fr
 
 ---
 ## 🚀 Installation
+   Make sure you have Python and Docker up and running
 
 ### 🐳 Run the App in a Docker Container
 
@@ -66,23 +67,42 @@ The steps are almost the same, except you'll be running the backend locally whil
    cd planetarium-api  
    ```
 
-2. **Set up environment variables**  
+2. **Configure virtual environment**
+   ```sh
+   python -m venv .venv
+   ```
+   **On Linux/MacOS(bash, zsh, etc)**
+   ```sh
+   source .venv/bin/activate 
+   ```
+   **On Windows(CMD)**
+   ```sh
+   .venv\Scripts\activate
+   ```
+
+3. **Install requirements**
+   ```sh
+   pip install requirements/dev.txt
+   ```
+   
+5. **Set up environment variables**  
    ```sh
    mv docker/.env.sample docker/.env  
    ```
    - Fill in your [Stripe API Keys](https://support.stripe.com/questions/what-are-stripe-api-keys-and-how-to-find-them).  
-   - Set POSTGRES_HOST=localhost to connect to the database container.  
+   - Set **POSTGRES_HOST**=localhost to connect to the database container.  
 
-3. **Start only the database container**  
+6. **Start only the database container**  
    ```sh
    docker compose -f docker/docker-compose-local.yaml up  
    ```
-4. **Navigate to the source directory**  
+
+7. **Navigate to the source directory**  
    ```sh
    cd src  
    ```
    
-5. **Apply migrations, load initial data, and run the server**  
+8. **Apply migrations, load initial data, and run the server**  
    ```sh
    python manage.py makemigrations && \  
    python manage.py migrate && \  
@@ -90,7 +110,7 @@ The steps are almost the same, except you'll be running the backend locally whil
    python manage.py runserver  
    ```
 
-6. **🧪 Run tests(when in src/)**   
+9. **🧪 Run tests(when in src/)**   
    ```sh
    pytest
    ```  
