@@ -121,4 +121,24 @@ The steps are almost the same, except you'll be running the backend locally whil
 Visit Swagger API Docs at http://127.0.0.1:8000/api/doc/swagger/ to see available endpoints and some example requests.
 
 ## Usage guide
-🛠️ *Coming soon...*
+### Login
+- If you have loaded the sample data, you can use these credentials:
+
+  **Email**
+  ```
+  admin@example.com
+  ```
+  **Password**
+  ```
+  1qazcde3
+  ```
+
+- Built in Django Admin panel is available at http://127.0.0.1:8000/admin
+
+- You can get JWT Token at http://127.0.0.1:8000/api/user/token/ endpoint.
+
+    Although, most endpoints are available as readonly even for anonimous users.
+    Except for http://127.0.0.1:8000/api/planetarium/bookings, where bookings of a currently logged in
+    user are displayed.
+  
+🛠️ *Under construction...*
