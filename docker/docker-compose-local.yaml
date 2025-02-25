@@ -1,6 +1,6 @@
 services:
   db:
-    image: 'postgres:latest'
+    image: "postgres:alpine"
     container_name: postgres-planetarium
     env_file:
       - .env
