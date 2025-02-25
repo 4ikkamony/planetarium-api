@@ -1,10 +1,29 @@
-# PplAnetAVLO: to the stars and beyond
+# PplAnetAVLO: To the Stars and Beyond
 
-This is planetarium management API, built wth DRF
+![Django](https://img.shields.io/badge/Django-5.1-blue?logo=django)
+![DRF](https://img.shields.io/badge/DRF-3.15-red?logo=django)
+![pytest](https://img.shields.io/badge/pytest-8.3-blue?logo=pytest)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-blue?logo=PostgreSQL&logoColor=blue)
+![Swagger](https://img.shields.io/badge/Swagger-UI-lightgreen?logo=swagger)
+![Docker](https://img.shields.io/badge/Docker-28.0-blue?logo=docker)
+![Stripe](https://img.shields.io/badge/Stripe-API-violet?logo=stripe)
 
-# Features
+This is the **Planetarium Management API**, built with Django and Django REST Framework.
 
-# Installation
+---
+
+## Features
+
+- Manage shows, bookings, and events in a planetarium
+- Swagger Documentation
+- JWT Authentication
+- PostgreSQL full-text and trinagam similarity search for Shows
+- Stripe Checkout Sessions for payments
+- Fully containerized with Docker
+
+---
+
+## Installation
 
 ## Run app in Docker container:
 
