@@ -119,3 +119,6 @@ The steps are almost the same, except you'll be running the backend locally whil
 
 ## 📖 After Installation  
 Visit Swagger API Docs at http://127.0.0.1:8000/api/doc/swagger/ to see available endpoints and some example requests.
+
+## Usage guide
+🛠️ *Coming soon...*
