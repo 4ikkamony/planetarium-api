@@ -1,5 +1,6 @@
 # PplAnetAVLO: To the Stars and Beyond
 
+![Python](https://img.shields.io/badge/Python-3.13.2-blue?logo=python&logoColor=yellow)
 ![Django](https://img.shields.io/badge/Django-5.1-blue?logo=django)
 ![DRF](https://img.shields.io/badge/DRF-3.15-red?logo=django)
 ![pytest](https://img.shields.io/badge/pytest-8.3-blue?logo=pytest)
