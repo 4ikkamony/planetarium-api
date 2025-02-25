@@ -22,73 +22,80 @@ This is the **Planetarium Management API**, built with Django and Django REST Fr
 - Fully containerized with Docker
 
 ---
+## 🚀 Installation
 
-## Installation
+### 🐳 Run the App in a Docker Container
 
-## Run app in Docker container:
+1. **Clone the repository**  
+   ```sh
+   git clone -b dev git@github.com:4ikkamony/planetarium-api.git
+   ```  
+   ```sh
+   cd planetarium-api
+   ```  
 
-```sh
-git clone -b dev git@github.com:4ikkamony/planetarium-api.git
-```
+3. **Set up environment variables**  
+   ```sh
+   mv docker/.env.sample docker/.env
+   ```  
 
-```sh
-cd planetarium-api
-```
+   - Fill in your [Stripe API Keys](https://support.stripe.com/questions/what-are-stripe-api-keys-and-how-to-find-them):  
+     - STRIPE_PUBLISHABLE_KEY  
+     - STRIPE_SECRET_KEY  
+   - The rest can be left as default for local development.  
 
-```sh
-mv docker/.env.sample docker/.env
-```
+4. **Start the containers**  
+   ```sh
+   docker compose -f docker/docker-compose.yaml up  
+   ```
+5. **Run tests (while the container is running)**  
+   ```sh
+   docker exec -it planetarium-backend pytest  
+   ```
+---
 
-Fill in [Stripe API Keys:](https://support.stripe.com/questions/what-are-stripe-api-keys-and-how-to-find-them) STRIPE_PUBLISHABLE_KEY and STRIPE_SECRET_KEY
+### 💻 Run Locally with a Database Container
 
-The rest of the values may be left as default, since we're running locally
+The steps are almost the same, except you'll be running the backend locally while using the database inside Docker.
 
-```sh
-docker compose -f docker/docker-compose.yaml up
-```
+1. **Clone the repository**  
+   ```sh
+   git clone -b dev git@github.com:4ikkamony/planetarium-api.git  
+   ```
+   ```sh
+   cd planetarium-api  
+   ```
 
-To run tests when container is running:
-```sh
-docker exec -it planetarium-backend pytest
-```
+2. **Set up environment variables**  
+   ```sh
+   mv docker/.env.sample docker/.env  
+   ```
+   - Fill in your [Stripe API Keys](https://support.stripe.com/questions/what-are-stripe-api-keys-and-how-to-find-them).  
+   - Set POSTGRES_HOST=localhost to connect to the database container.  
 
-## Run app localy with DB cointainer
+3. **Start only the database container**  
+   ```sh
+   docker compose -f docker/docker-compose-local.yaml up  
+   ```
+4. **Navigate to the source directory**  
+   ```sh
+   cd src  
+   ```
+   
+5. **Apply migrations, load initial data, and run the server**  
+   ```sh
+   python manage.py makemigrations && \  
+   python manage.py migrate && \  
+   python manage.py loaddata data/planetarium_db_data.json && \  
+   python manage.py runserver  
+   ```
 
-The steps almost the same:
+6. **Run tests(when in src/)**   
+   ```sh
+   pytest
+   ```  
 
-```sh
-git clone -b dev git@github.com:4ikkamony/planetarium-api.git
-```
+---
 
-```sh
-cd planetarium-api
-```
-
-```sh
-mv docker/.env.sample docker/.env
-```
-
-Fill in [Stripe API Keys:](https://support.stripe.com/questions/what-are-stripe-api-keys-and-how-to-find-them) STRIPE_PUBLISHABLE_KEY and STRIPE_SECRET_KEY
-
-Set POSTGRES_HOST=localhost
-
-```sh
-docker compose -f docker/docker-compose-local.yaml up
-```
-```sh
-cd src
-```
-
-```sh
-python manage.py makemigrations && \
-python manage.py migrate && \
-python manage.py loaddata data/planetarium_db_data.json && \
-python manage.py runserver
-```
-
-To run tests, when in src/ run:
-```sh
-pytest
-```
-# After installation
-## Visit http://127.0.0.1:8000/api/doc/swagger/ to see available endpoints(and some examples)
+## 📖 After Installation  
+Visit Swagger API Docs at http://127.0.0.1:8000/api/doc/swagger/ to see available endpoints and some example requests.
