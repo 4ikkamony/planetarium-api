@@ -56,16 +56,22 @@ This is the **Planetarium Management API**, built with Django and Django REST Fr
    - The rest can be left as default for local development.  
 
 4. **Start the containers**  
+   **On Linux**
    ```sh
-   docker compose -f docker/docker-compose.yaml up  
+   nohup docker compose -f docker/docker-compose.yaml up &
+   ```
+   **On Windows**
+   ```sh
+   start docker compose -f docker/docker-compose.yaml up
    ```
 5. **🧪 Run tests (while the container is running)**  
    ```sh
    docker exec -it planetarium-backend pytest  
    ```
----
 
 [⬆️](#contents)
+
+---
 
 ### 💻 Run Locally with just a Database Container
 
@@ -105,24 +111,32 @@ The steps are almost the same, except you'll be running the backend locally whil
    - Set **POSTGRES_HOST**=localhost to connect to the database container.  
 
 6. **Start only the database container**  
+   **On Linux**
    ```sh
-   docker compose -f docker/docker-compose-local.yaml up  
+   nohup docker compose -f docker/docker-compose-local.yaml up &
+   ```
+   **On Windows**
+   ```sh
+   start docker compose -f docker/docker-compose-local.yaml up
    ```
 
-7. **Navigate to the source directory**  
+8. **Navigate to the source directory**  
    ```sh
    cd src  
    ```
    
-8. **Apply migrations, load initial data, and run the server**  
+9. **Apply migrations, load initial data, and run the server**  
    ```sh
-   python manage.py makemigrations && \  
-   python manage.py migrate && \  
-   python manage.py loaddata data/planetarium_db_data.json && \  
+   python manage.py migrate
+   ```
+   ```sh
+   python manage.py loaddata data/planetarium_db_data.json
+   ```
+   ```sh
    python manage.py runserver  
    ```
 
-9. **🧪 Run tests(when in src/)**   
+11. **🧪 Run tests(when in src/)**   
    ```sh
    pytest
    ```  
