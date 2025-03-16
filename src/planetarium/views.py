@@ -89,7 +89,7 @@ class ShowViewSet(
         if self.action == "add_event":
             return ShowAddEventSerializer
 
-        return ShowSerializer
+        return self.serializer_class
 
     @action(detail=True, methods=["POST"], url_path="add-event")
     def add_event(self, request, pk=None):
@@ -133,7 +133,7 @@ class EventViewSet(viewsets.ModelViewSet):
         if self.action == "retrieve":
             return EventDetailSerializer
 
-        return EventSerializer
+        return self.serializer_class
 
     def get_permissions(self):
         if self.action == "book_tickets":
