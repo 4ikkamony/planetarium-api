@@ -9,17 +9,17 @@ from payment.views import (
 
 urlpatterns = [
     path(
-        "stripe/checkout/create/",
+        "create/",
         CheckoutSessionCreateView.as_view(),
         name="stripe-checkout",
     ),
     path(
-        "stripe/checkout/success/",
+        "success/",
         CheckoutSessionSuccessView.as_view(),
         name="stripe-success",
     ),
     path(
-        "stripe/checkout/cancel/",
+        "cancel/",
         CheckoutSessionCancelView.as_view(),
         name="stripe-cancel",
     ),

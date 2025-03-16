@@ -5,12 +5,12 @@ from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
-    path("api/planetarium/", include("planetarium.urls", namespace="planetarium")),
-    path("api/user/", include("user.urls", namespace="user")),
-    path("api/payment/", include("payment.urls", namespace="payment")),
+    path("api/planetariums/", include("planetarium.urls", namespace="planetarium")),
+    path("api/users/", include("user.urls", namespace="user")),
+    path("api/payments/", include("payment.urls", namespace="payment")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
-        "api/doc/swagger/",
+        "api/docs/swagger/",
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
