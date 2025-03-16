@@ -116,7 +116,7 @@ class ShowViewSet(
 )
 class EventViewSet(viewsets.ModelViewSet):
     queryset = (
-        Event.objects.all()
+        Event.objects
         .select_related("show", "dome")
         .annotate(
             tickets_available=(
