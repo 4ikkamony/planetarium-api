@@ -1,9 +1,8 @@
 import os
 import uuid
 
-from click.core import F
 from django.core.validators import MinValueValidator
-from django.db.models import Sum
+from django.db.models import Sum, F
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
