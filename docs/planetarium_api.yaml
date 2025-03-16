@@ -4,12 +4,12 @@ info:
   version: '0.1'
   description: API for managing planetarium
 paths:
-  /api/payment/stripe/checkout/cancel/:
+  /api/payments/cancel/:
     get:
-      operationId: payment_stripe_checkout_cancel_retrieve
+      operationId: payments_cancel_retrieve
       description: Cancel a Stripe Checkout Session, marking the payment as cancelled.
       tags:
-      - payment
+      - payments
       security:
       - jwtAuth: []
       responses:
@@ -39,13 +39,13 @@ paths:
                     type: string
                     example: 'Stripe error: <error message>'
           description: ''
-  /api/payment/stripe/checkout/create/:
+  /api/payments/create/:
     post:
-      operationId: payment_stripe_checkout_create_create
+      operationId: payments_create_create
       description: Create a new Stripe Checkout Session for a Booking. Accepts a booking_id
         and returns a session_id and session_url.
       tags:
-      - payment
+      - payments
       requestBody:
         content:
           application/json:
@@ -109,13 +109,13 @@ paths:
                     type: string
                     example: 'Stripe error: <error message>'
           description: ''
-  /api/payment/stripe/checkout/success/:
+  /api/payments/success/:
     get:
-      operationId: payment_stripe_checkout_success_retrieve
+      operationId: payments_success_retrieve
       description: Retrieve a Stripe Checkout Session and mark the payment as successful
         if completed.
       tags:
-      - payment
+      - payments
       security:
       - jwtAuth: []
       responses:
@@ -142,9 +142,9 @@ paths:
                     type: string
                     example: Payment was not completed
           description: ''
-  /api/planetarium/bookings/:
+  /api/planetariums/bookings/:
     get:
-      operationId: planetarium_bookings_list
+      operationId: planetariums_bookings_list
       parameters:
       - in: query
         name: dome_id
@@ -174,7 +174,7 @@ paths:
           type: integer
         description: Filter by Show ID.
       tags:
-      - planetarium
+      - planetariums
       security:
       - jwtAuth: []
       responses:
@@ -205,11 +205,11 @@ paths:
                       created_at: '2025-02-22T13:56:54.627000Z'
                   summary: Booking List Example
           description: List of bookings
-  /api/planetarium/domes/:
+  /api/planetariums/domes/:
     get:
-      operationId: planetarium_domes_list
+      operationId: planetariums_domes_list
       tags:
-      - planetarium
+      - planetariums
       security:
       - jwtAuth: []
       responses:
@@ -222,9 +222,9 @@ paths:
                   $ref: '#/components/schemas/Dome'
           description: ''
     post:
-      operationId: planetarium_domes_create
+      operationId: planetariums_domes_create
       tags:
-      - planetarium
+      - planetariums
       requestBody:
         content:
           application/json:
@@ -246,11 +246,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Dome'
           description: ''
-  /api/planetarium/events/:
+  /api/planetariums/events/:
     get:
-      operationId: planetarium_events_list
+      operationId: planetariums_events_list
       tags:
-      - planetarium
+      - planetariums
       security:
       - jwtAuth: []
       responses:
@@ -275,9 +275,9 @@ paths:
                   summary: List of events example
           description: List of events
     post:
-      operationId: planetarium_events_create
+      operationId: planetariums_events_create
       tags:
-      - planetarium
+      - planetariums
       requestBody:
         content:
           application/json:
@@ -299,9 +299,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Event'
           description: ''
-  /api/planetarium/events/{id}/:
+  /api/planetariums/events/{id}/:
     get:
-      operationId: planetarium_events_retrieve
+      operationId: planetariums_events_retrieve
       parameters:
       - in: path
         name: id
@@ -310,7 +310,7 @@ paths:
         description: A unique integer value identifying this event.
         required: true
       tags:
-      - planetarium
+      - planetariums
       security:
       - jwtAuth: []
       responses:
@@ -348,7 +348,7 @@ paths:
                   summary: Event not found example
           description: Event not found
     put:
-      operationId: planetarium_events_update
+      operationId: planetariums_events_update
       parameters:
       - in: path
         name: id
@@ -357,7 +357,7 @@ paths:
         description: A unique integer value identifying this event.
         required: true
       tags:
-      - planetarium
+      - planetariums
       requestBody:
         content:
           application/json:
@@ -380,7 +380,7 @@ paths:
                 $ref: '#/components/schemas/Event'
           description: ''
     patch:
-      operationId: planetarium_events_partial_update
+      operationId: planetariums_events_partial_update
       parameters:
       - in: path
         name: id
@@ -389,7 +389,7 @@ paths:
         description: A unique integer value identifying this event.
         required: true
       tags:
-      - planetarium
+      - planetariums
       requestBody:
         content:
           application/json:
@@ -411,7 +411,7 @@ paths:
                 $ref: '#/components/schemas/Event'
           description: ''
     delete:
-      operationId: planetarium_events_destroy
+      operationId: planetariums_events_destroy
       parameters:
       - in: path
         name: id
@@ -420,15 +420,15 @@ paths:
         description: A unique integer value identifying this event.
         required: true
       tags:
-      - planetarium
+      - planetariums
       security:
       - jwtAuth: []
       responses:
         '204':
           description: No response body
-  /api/planetarium/events/{id}/book-tickets/:
+  /api/planetariums/events/{id}/book-tickets/:
     post:
-      operationId: planetarium_events_book_tickets_create
+      operationId: planetariums_events_book_tickets_create
       parameters:
       - in: path
         name: id
@@ -437,7 +437,7 @@ paths:
         description: Event ID
         required: true
       tags:
-      - planetarium
+      - planetariums
       requestBody:
         content:
           application/json:
@@ -487,11 +487,11 @@ paths:
                     - Seat (1, 1) is already taken.
                   summary: Seat Already Taken
           description: Bad Request - Validation Error (Seat already taken)
-  /api/planetarium/show-themes/:
+  /api/planetariums/show-themes/:
     get:
-      operationId: planetarium_show_themes_list
+      operationId: planetariums_show_themes_list
       tags:
-      - planetarium
+      - planetariums
       security:
       - jwtAuth: []
       responses:
@@ -504,9 +504,9 @@ paths:
                   $ref: '#/components/schemas/ShowTheme'
           description: ''
     post:
-      operationId: planetarium_show_themes_create
+      operationId: planetariums_show_themes_create
       tags:
-      - planetarium
+      - planetariums
       requestBody:
         content:
           application/json:
@@ -528,9 +528,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/ShowTheme'
           description: ''
-  /api/planetarium/shows/:
+  /api/planetariums/shows/:
     get:
-      operationId: planetarium_shows_list
+      operationId: planetariums_shows_list
       description: Get list of Shows
       parameters:
       - in: query
@@ -544,7 +544,7 @@ paths:
           type: integer
         description: Filter shows by theme id
       tags:
-      - planetarium
+      - planetariums
       security:
       - jwtAuth: []
       responses:
@@ -595,11 +595,11 @@ paths:
                   summary: Example response for search=earth
           description: List of shows
     post:
-      operationId: planetarium_shows_create
+      operationId: planetariums_shows_create
       description: Create a new show. It has title, description, show_themes and poster
         fields
       tags:
-      - planetarium
+      - planetariums
       requestBody:
         content:
           multipart/form-data:
@@ -656,9 +656,9 @@ paths:
                     - This field may not be blank.
                   summary: Missing required fields example
           description: Bad Request - Missing required fields
-  /api/planetarium/shows/{id}/:
+  /api/planetariums/shows/{id}/:
     get:
-      operationId: planetarium_shows_retrieve
+      operationId: planetariums_shows_retrieve
       description: 'Get detailed display of a Show. '
       parameters:
       - in: path
@@ -668,7 +668,7 @@ paths:
         description: A unique integer value identifying this show.
         required: true
       tags:
-      - planetarium
+      - planetariums
       security:
       - jwtAuth: []
       responses:
@@ -703,9 +703,9 @@ paths:
                 type: object
                 additionalProperties: {}
           description: Not Found - Show not found.
-  /api/planetarium/shows/{id}/add-event/:
+  /api/planetariums/shows/{id}/add-event/:
     post:
-      operationId: planetarium_shows_add_event_create
+      operationId: planetariums_shows_add_event_create
       description: Add events to a specific show.
       parameters:
       - in: path
@@ -715,7 +715,7 @@ paths:
         description: A unique integer value identifying this show.
         required: true
       tags:
-      - planetarium
+      - planetariums
       requestBody:
         content:
           application/json:
@@ -737,11 +737,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/ShowAddEvent'
           description: ''
-  /api/user/me/:
+  /api/users/me/:
     get:
-      operationId: user_me_retrieve
+      operationId: users_me_retrieve
       tags:
-      - user
+      - users
       security:
       - jwtAuth: []
       responses:
@@ -752,9 +752,9 @@ paths:
                 $ref: '#/components/schemas/User'
           description: ''
     put:
-      operationId: user_me_update
+      operationId: users_me_update
       tags:
-      - user
+      - users
       requestBody:
         content:
           application/json:
@@ -777,9 +777,9 @@ paths:
                 $ref: '#/components/schemas/User'
           description: ''
     patch:
-      operationId: user_me_partial_update
+      operationId: users_me_partial_update
       tags:
-      - user
+      - users
       requestBody:
         content:
           application/json:
@@ -800,11 +800,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
-  /api/user/register/:
+  /api/users/register/:
     post:
-      operationId: user_register_create
+      operationId: users_register_create
       tags:
-      - user
+      - users
       requestBody:
         content:
           application/json:
@@ -826,14 +826,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
-  /api/user/token/:
+  /api/users/token/:
     post:
-      operationId: user_token_create
+      operationId: users_token_create
       description: |-
         Takes a set of user credentials and returns an access and refresh JSON web
         token pair to prove the authentication of those credentials.
       tags:
-      - user
+      - users
       requestBody:
         content:
           application/json:
@@ -853,14 +853,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenObtainPair'
           description: ''
-  /api/user/token/refresh/:
+  /api/users/token/refresh/:
     post:
-      operationId: user_token_refresh_create
+      operationId: users_token_refresh_create
       description: |-
         Takes a refresh type JSON web token and returns an access type JSON web
         token if the refresh token is valid.
       tags:
-      - user
+      - users
       requestBody:
         content:
           application/json:
@@ -880,14 +880,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenRefresh'
           description: ''
-  /api/user/token/verify/:
+  /api/users/token/verify/:
     post:
-      operationId: user_token_verify_create
+      operationId: users_token_verify_create
       description: |-
         Takes a token and indicates if it is valid.  This view provides no
         information about a token's fitness for a particular use.
       tags:
-      - user
+      - users
       requestBody:
         content:
           application/json:
