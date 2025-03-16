@@ -69,10 +69,11 @@ class ShowAddEventSerializer(serializers.Serializer):
     events = AddEventToShowSerializer(many=True)
 
     def create(self, validated_data):
-        return [
-            Event.objects.create(show=self.context["show"], **event_data)
-            for event_data in validated_data["events"]
+        show = self.context["show"]
+        event_instances = [
+            Event(show=show, **event_data) for event_data in validated_data["events"]
         ]
+        return Event.objects.bulk_create(event_instances)
 
 
 class ShowSerializer(serializers.ModelSerializer):
