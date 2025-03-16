@@ -1,7 +1,9 @@
 import os
 import uuid
 
+from click.core import F
 from django.core.validators import MinValueValidator
+from django.db.models import Sum
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
@@ -75,7 +77,10 @@ class Booking(models.Model):
         return f"Booking {self.created_at} by {self.user}"
 
     def calculate_booking_price(self):
-        return sum(ticket.ticket_type.price for ticket in self.tickets.all())
+        total = self.tickets.aggregate(
+            total_price=Sum(F("ticket_type__price"))
+        ).get("total_price")
+        return total if total is not None else 0
 
 
 class TicketType(models.Model):
