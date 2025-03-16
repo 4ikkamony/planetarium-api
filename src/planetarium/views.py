@@ -44,7 +44,6 @@ class ShowThemeViewSet(
 ):
     queryset = ShowTheme.objects.all()
     serializer_class = ShowThemeSerializer
-    permission_classes = (IsAdminOrReadOnly,)
 
 
 class DomeViewSet(
@@ -54,7 +53,6 @@ class DomeViewSet(
 ):
     queryset = Dome.objects.all()
     serializer_class = DomeSerializer
-    permission_classes = (IsAdminOrReadOnly,)
 
 
 @extend_schema_view(
@@ -80,7 +78,6 @@ class ShowViewSet(
     filterset_fields = [
         "show_themes",
     ]
-    permission_classes = (IsAdminOrReadOnly,)
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -128,7 +125,6 @@ class EventViewSet(viewsets.ModelViewSet):
         )
     )
     serializer_class = EventSerializer
-    permission_classes = (IsAdminOrReadOnly,)
 
     def get_serializer_class(self):
         if self.action == "list":
