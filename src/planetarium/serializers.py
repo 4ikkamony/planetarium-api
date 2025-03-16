@@ -181,8 +181,8 @@ class TicketSerializer(serializers.ModelSerializer):
 
 
 class TicketListSerializer(TicketSerializer):
-    event = EventListSerializer(many=False, read_only=True)
-    ticket_type = TicketTypeSerializer(many=False, read_only=True)
+    event = EventListSerializer(read_only=True)
+    ticket_type = TicketTypeSerializer(read_only=True)
 
 
 class TicketSeatsSerializer(TicketSerializer):
@@ -192,7 +192,7 @@ class TicketSeatsSerializer(TicketSerializer):
 
 
 class EventDetailSerializer(EventSerializer):
-    dome = DomeSerializer(many=False, read_only=True)
+    dome = DomeSerializer(read_only=True)
     taken_seats = TicketSeatsSerializer(source="tickets", many=True, read_only=True)
 
     class Meta:
