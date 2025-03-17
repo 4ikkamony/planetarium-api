@@ -115,14 +115,8 @@ class ShowViewSet(
     book_tickets=extend_schema(**book_tickets_schema),
 )
 class EventViewSet(viewsets.ModelViewSet):
-    queryset = (
-        Event.objects
-        .select_related("show", "dome")
-        .annotate(
-            tickets_available=(
-                F("dome__rows") * F("dome__seats_in_row") - Count("tickets")
-            )
-        )
+    queryset = Event.objects.select_related("show", "dome").annotate(
+        tickets_available=(F("dome__rows") * F("dome__seats_in_row") - Count("tickets"))
     )
     serializer_class = EventSerializer
 
