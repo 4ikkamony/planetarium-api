@@ -79,7 +79,7 @@ class Booking(models.Model):
         total = self.tickets.aggregate(
             total_price=Sum(F("ticket_type__price"))
         ).get("total_price")
-        return total if total is not None else 0
+        return total if total else 0
 
 
 class TicketType(models.Model):
