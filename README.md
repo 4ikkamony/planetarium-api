@@ -41,7 +41,7 @@ This is the **Planetarium Management API**, built with Django and Django REST Fr
 
 1. **Clone the repository**  
    ```sh
-   git clone -b dev git@github.com:4ikkamony/planetarium-api.git
+   git clone git@github.com:4ikkamony/planetarium-api.git
    ```  
    ```sh
    cd planetarium-api
